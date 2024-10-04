@@ -2,15 +2,34 @@ package me.mockitoexample;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Unit test for simple App.
+ *  * Teste da classe {@link ServicoEnvioEmail} exemplificando testes usando Argument Captor
  */
+@ExtendWith(MockitoExtension.class)
 public class ServicoDeEmailTest {
-    
+    @Mock
+    private PlataformaDeEnvio plataforma;
+
+    @InjectMocks
+    private ServicoDeEmail servico;
+
+    @Captor
+    private ArgumentCaptor<Email> emailCaptor;
+
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        Assertions.assertTrue( true );
+    public void validaSeEmailEstaComDadosCorretos() {
+
+        String email = "jose.alve@provedor.com";
+        String mensagem = "Mensagem de Teste 123";
+
+        servico.enviaEmail(email, mensagem, true);
+        Mockito.verify(plataforma).enviaEmail(emailCaptor.capture());
+
+        Email emailCapturado = emailCaptor.getValue();
+        Assertions.assertEquals(Formato.HTML, emailCapturado.getFormato());
     }
 }   
